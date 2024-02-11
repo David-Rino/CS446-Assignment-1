@@ -1,3 +1,7 @@
+//Author: Rino David
+//Class: CS 446
+//Purpose: Create a simpleshell simulation
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
