@@ -8,30 +8,20 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-
-
 int parseInput(char* input, char* tokens[]) {
     int tokenCount = 0;
-
-    //printf(" %s\n", input);
 
     if (input == NULL) {
         return -1;
     }
 
     tokens[tokenCount] = strtok(input, " \n");
-    //printf(" %s\n", tokens[tokenCount]);
-    //printf(" %d\n", tokenCount);
 
     while(tokens[tokenCount] != NULL) {
         tokens[++tokenCount] = strtok(NULL, " \n");
-        //printf(" %d\n", tokenCount);
-        //printf(" %s\n", tokens[tokenCount]);
     }
 
     tokens[tokenCount] = NULL;
-    //printf(" %d\n", tokenCount);
-    //printf(" %s\n", tokens[5]);
     return tokenCount;
 
 }
@@ -41,22 +31,25 @@ int executeCommand(char* command, char* arguments[]) {
     int status;
 
     if (pid == -1) {
-        perror("Error: fork Failed");
+        //fork failed error.
+        perror("fork Failed");
         return -1;
     }
 
     if (pid == 0) {
         if (execvp(command, arguments) == -1) {
-            printf("Exec error");
+            //If exec failed report error via perror and also terminates the child.
+            printf("Exec error: %s", strerror(errno));
             _exit(1);
         }
     } else if(waitpid(pid, &status, 0) == -1) {
-        perror("Error: Wait Failed");
+        //If the wait failed report error via perror.
+        perror("Child finished with error status:");
         return -1;
     } else if(WIFEXITED(status)) {
         return WEXITSTATUS(status);
     } else {
-        printf("Child ended \n");
+        printf("Child ended with for abnromal reasons \n");
         return -1;
     }
 
@@ -118,6 +111,7 @@ int main() {
         }
     }
 
+    //Not entirely sure if I should be freeing my variables as when I do it gives "warning: ‘void free(void*)’ called on unallocated object"
     //free(input);
     //free(cmd);
     //free(cwd);
